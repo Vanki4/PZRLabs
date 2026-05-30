@@ -4,19 +4,7 @@
 
 BinarySearchTree::Node::Node(Key key, Value value, bool color,Node *parent, Node *left, Node *right) : keyValuePair(key, value),color(color), parent(parent), left(left), right(right) {}
 
-BinarySearchTree::Node::Node(const Node &other) : keyValuePair(other.keyValuePair),color(other.color), parent(nullptr), left(nullptr), right(nullptr) {
-    if (other.left)
-    {
-        left = new Node(*other.left);
-        left->parent = this;
-    }
-
-    if (other.right)
-    {
-        right = new Node(*other.right);
-        right->parent = this;
-    }
-}
+BinarySearchTree::Node::Node(const Node& other) : keyValuePair(other.keyValuePair) {}
 
 bool BinarySearchTree::Node::operator==(const Node &other) const {
 	return keyValuePair == other.keyValuePair;
@@ -239,6 +227,14 @@ size_t BinarySearchTree::Node::getMaxHeight() const {
 	return 1 + std::max(lh, rh);
 }
 
+BinarySearchTree::Node* BinarySearchTree::copySubtree(const Node* other) {
+    if (other == nullptr) return nullptr;
+    Node* n = new Node(*other);
+    n->left = copySubtree(other->left);
+    n->right = copySubtree(other->right);
+    return n;
+}
+
 void BinarySearchTree::freeSubtree(Node* node) {
 	if (!node) return;
 	freeSubtree(node->left);
@@ -246,16 +242,12 @@ void BinarySearchTree::freeSubtree(Node* node) {
 	delete node;
 }
 
-BinarySearchTree::BinarySearchTree(const BinarySearchTree &other) : _size(other._size) {
-	if (other._root!=nullptr) _root = new Node(*other._root);
-}
+BinarySearchTree::BinarySearchTree(const BinarySearchTree &other) : _size(other._size),_root(copySubtree(other._root)) {}
 
 BinarySearchTree& BinarySearchTree::operator=(const BinarySearchTree &other) {
 	if (this == &other) return *this;
 	freeSubtree(_root);
-	_root = nullptr;
-	_size = 0;
-	if (other._root!=nullptr) _root = new Node(*other._root);
+	_root = copySubtree(other._root);
 	_size = other._size;
 	return *this;
 }
@@ -269,10 +261,8 @@ BinarySearchTree::BinarySearchTree(BinarySearchTree &&other) noexcept {
 
 BinarySearchTree& BinarySearchTree::operator=(BinarySearchTree &&other) noexcept {
 	if (this == &other) return *this;
-	_root = other._root;
-	_size = other._size;
-	other._root = nullptr;
-	other._size = 0;
+	std::swap(this->_root,other._root);
+	std::swap(this->_size,other._size);
 	return *this;
 }
 
