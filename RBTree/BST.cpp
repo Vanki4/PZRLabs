@@ -4,7 +4,7 @@
 
 BinarySearchTree::Node::Node(Key key, Value value, bool color,Node *parent, Node *left, Node *right) : keyValuePair(key, value),color(color), parent(parent), left(left), right(right) {}
 
-BinarySearchTree::Node::Node(const Node &other) : keyValuePair(other.keyValuePair), parent(nullptr), left(nullptr), right(nullptr) {
+BinarySearchTree::Node::Node(const Node &other) : keyValuePair(other.keyValuePair),color(other.color), parent(nullptr), left(nullptr), right(nullptr) {
     if (other.left)
     {
         left = new Node(*other.left);
@@ -447,22 +447,43 @@ bool BinarySearchTree::ConstIterator::operator!=(const ConstIterator &other) con
 }
 
 void BinarySearchTree::insert(const Key &key, const Value &value) {
-	if (_root==nullptr) {
-		_root = new Node(key, value);
-		_root->right = new Node(std::numeric_limits<Key>::max(),value,_root);
-	}
-	else _root->insert(key, value);
-	_size++;
+	if (!_root) {
+        _root = new Node(key, value);
+        _root->right = new Node(std::numeric_limits<Key>::max(), value, false, _root);
+        ++_size;
+        return;
+    }
+    Node* _end = end()._node;
+    if (_end->parent) _end->parent->right = nullptr;
+
+    _root->insert(key, value, &_root);
+    ++_size;
+
+    Node* current = _root;
+    while (current->right) current = current->right;
+    current->right = _end;
+    _end->parent = current;
 }
 
 void BinarySearchTree::erase(const Key &key) {
-	if (_root==nullptr) return;
-	Iterator tmp(_root);
-	while ((tmp = find(key)) != end())
-	{
-		tmp._node->erase(key);
-		_size--;
-	}		
+	if (!_root) return;
+    Iterator i(_root);
+    while ((i = find(key)) != end()) {
+        Node* _end = end()._node;
+        _end->parent->right = nullptr;
+        
+        i._node->erase(key, &_root);
+        --_size;
+        if (!_root) {
+            delete _end;
+            return;
+        }
+
+        Node* current = _root;
+        while (current->right) current = current->right;
+        current->right = _end;
+        _end->parent = current;
+    }		
 }
 
 BinarySearchTree::ConstIterator BinarySearchTree::find(const Key &key) const {

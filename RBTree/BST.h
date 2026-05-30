@@ -87,6 +87,7 @@ public:
 
     private:
         Node *_node;
+	friend BinarySearchTree;
     };
 
     //! Константный итератор бинарного дерева поиска
@@ -109,6 +110,7 @@ public:
 
     private:
         const Node *_node;
+	friend BinarySearchTree;
     };
 
     //! Вставить элемент с ключем key и значением value
