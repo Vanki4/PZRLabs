@@ -157,7 +157,7 @@ public:
     size_t size() const;
     //! Вывести дерево в консоль
     void output_tree();
-
+    size_t max_height() const;
 private:
     size_t _size = 0; //!< размер дерева
     Node *_root = nullptr; //!< корневой узел дерева

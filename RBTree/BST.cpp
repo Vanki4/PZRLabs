@@ -589,3 +589,7 @@ size_t BinarySearchTree::size() const {
 void BinarySearchTree::output_tree() {
 	if (_root) _root->output_node_tree();
 }
+
+size_t BinarySearchTree::max_height() const {
+	return _root->getMaxHeight();
+}
