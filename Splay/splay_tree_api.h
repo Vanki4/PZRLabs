@@ -253,7 +253,7 @@ public:
 
     bool validateBST(Node* node, const Key& minKey, const Key& maxKey) const {
         if (!node) return true;
-        if (node->key <= minKey || node->key >= maxKey) return false;
+        if ((node->key <= minKey && minKey != Key()) || (node->key >= maxKey && maxKey != Key())) return false;
         return validateBST(node->left, minKey, node->key) && 
                validateBST(node->right, node->key, maxKey);
     }

@@ -16,5 +16,9 @@ int main() {
 	else std::cout << "Ошибка" << std::endl;
 	a.remove("DaniilMandrikin");
 	std::cout << "Размер: " << a.size() << std::endl;
+	if (a.isValidBST())
+	{
+		std::cout << "ВАЛИДНО" << std::endl;
+	}
 	return 0;	
 }
